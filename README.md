@@ -25,3 +25,6 @@ Then, copy the desktop file in your Applications folder.
 On Ubuntu : `sudo cp /path/to/npy_viewer/NPYFileViewer.desktop /usr/share/applications/`
 
 After that, the application icon should appear in the *Open With...* menu.
+You can set it as default to open it with just a double click.
+
+Have fun ! :wink:
