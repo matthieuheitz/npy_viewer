@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NPY Image Viewer
+GenericName=NPY Image Viewer
+Comment=Shortcut to quickly visualize NPY arrays as images, with matplotlib
+# Change the path to the script here
+Exec= python2 /path/to/npy_viewer/npy_image_viewer.py %U
+MimeType=application/octet-stream
+Terminal=true
+# TryExec=
+# Icon=
+# Categories=
+# StartupNotify=true
