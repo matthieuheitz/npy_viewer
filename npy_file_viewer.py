@@ -15,6 +15,7 @@ for i in range(1,len(sys.argv)):
     print "abs_min\t=",np.min(np.abs(A))
     print "mean \t=",np.mean(A)
     print "median \t=",np.median(A)
+    print "std_dev\t=",np.std(A)
     print "\n"
 
 input("Hit Enter to quit ...")
