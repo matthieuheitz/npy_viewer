@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NPY File Compare
+GenericName=NPY File Compare
+Comment=Shortcut to quickly compare NPY files (in terminal)
+# Change the path to the script here
+Exec= python2 /path/to/npy_viewer/npy_file_compare.py %U
+MimeType=application/octet-stream
+Terminal=true
+# TryExec=
+# Icon=
+# Categories=
+# StartupNotify=true
