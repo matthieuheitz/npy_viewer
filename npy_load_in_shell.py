@@ -6,6 +6,7 @@ where each array can be accessed in order : A[0], A[1], etc.
 It also displays the array(s) and gives some statistics.
 PyPlot is preloaded so that you don't have to type it.
 '''
+
 import matplotlib.pyplot as plt
 import numpy as np
 import sys

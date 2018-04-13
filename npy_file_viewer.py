@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+'''
+This script gives statistics about the array in the NPY file
+'''
 
 import numpy as np
 import sys

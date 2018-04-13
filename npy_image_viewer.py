@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+'''
+This script plots a 2D array as in image.
+It also gives statistics about the array.
+'''
 
 import matplotlib.pyplot as plt
 import numpy as np
