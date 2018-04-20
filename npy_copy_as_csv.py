@@ -21,6 +21,8 @@ csvWriter = csv.writer(s)
 for i in range(1,len(sys.argv)):
     file = sys.argv[i]
     A = np.load(file)
+    if( A.ndim == 1):
+        A = A.reshape([A.size,1])
     csvWriter.writerows(A)
     if i != len(sys.argv):
         csvWriter.writerows(' ')
