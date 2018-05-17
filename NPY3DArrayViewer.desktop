@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NPY 3D Array Viewer
+GenericName=NPY 3D Array Viewer
+Comment=Shortcut to visualize a 3D array as a color histogram
+# Change the path to the script here
+Exec= python3 /path/to/npy_viewer/npy_3d_array_viewer.py %U
+MimeType=application/octet-stream
+Terminal=true
+# TryExec=
+# Icon=
+# Categories=
+# StartupNotify=true
