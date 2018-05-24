@@ -27,4 +27,5 @@ for i in range(1,len(sys.argv)):
     plt.title(os.path.basename(file))
 
 plt.show()
-input("Hit Enter to quit ...")
+if sys.platform.startswith('linux'):
+    input("Hit Enter to quit ...")

@@ -10,6 +10,10 @@ import sys
 import os
 from mpl_toolkits.mplot3d import Axes3D
 
+def hit_enter_to_quit():
+    if sys.platform.startswith('linux'):
+        input("Hit Enter to quit ...")
+
 # isdigit() doesn't work for decimal numbers
 def is_number(n):
     try:
@@ -36,7 +40,8 @@ for i in range(1,len(sys.argv)):
     A = np.load(file)
     if A.ndim != 3:
         print("Error: Array must be of dimension 3")
-        input("Hit Enter to quit ...")
+        hit_enter_to_quit()
+
     print(os.path.basename(file)," :\n")
     print(A)
     print("shape \t=",A.shape)
@@ -63,5 +68,4 @@ for i in range(1,len(sys.argv)):
     plt.title("scale=%g, max=%e"%(scale,np.max(A)))
 
 # plt.show()
-input("Hit Enter to quit ...")
-
+hit_enter_to_quit()

@@ -28,5 +28,5 @@ for i in range(1,len(sys.argv)):
         csvWriter.writerows(' ')
 pyperclip.copy(s.getvalue())
 
-input("Hit Enter to quit ...")
-
+if sys.platform.startswith('linux'):
+    input("Hit Enter to quit ...")

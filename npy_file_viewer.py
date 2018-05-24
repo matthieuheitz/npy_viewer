@@ -21,4 +21,5 @@ for i in range(1,len(sys.argv)):
     print("std_dev\t=",np.std(A))
     print("\n")
 
-input("Hit Enter to quit ...")
+if sys.platform.startswith('linux'):
+    input("Hit Enter to quit ...")

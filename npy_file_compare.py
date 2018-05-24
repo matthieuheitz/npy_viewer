@@ -10,10 +10,15 @@ import numpy as np
 import sys
 import os
 
+def hit_enter_to_quit():
+    if sys.platform.startswith('linux'):
+        input("Hit Enter to quit ...")
+
+
 if len(sys.argv) != 3:
     print("ERROR: Exactly two files must be selected for comparison")
-    input("Hit Enter to quit ...")
-    exit(1)
+    hit_enter_to_quit()
+    exit(0)
 
 f1 = sys.argv[1]
 f2 = sys.argv[2]
@@ -33,14 +38,14 @@ if A1.shape != A2.shape:
     print(os.path.basename(f1)," has shape ",A1.shape)
     print(os.path.basename(f2)," has shape ",A2.shape)
     print("The two files must be of same shape for further comparison.")
-    input("Hit Enter to quit ...")
-    exit(1)
+    hit_enter_to_quit()
+    exit(0)
 
 abs_err = np.abs(A2-A1)
 if np.sum(abs_err != 0) == 0:
     print("The two files are identical.\n")
-    input("Hit Enter to quit ...")
-    exit(1)
+    hit_enter_to_quit()
+    exit(0)
 
 print("The two files have the same shape: ",A1.shape,"\n")
 
@@ -83,4 +88,4 @@ if len(A1.shape) == 2:
     plt.title("abs(f1-f2)")
     plt.show()
 
-input("Hit Enter to quit ...")
+hit_enter_to_quit()
