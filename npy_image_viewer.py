@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-This script plots a 2D array as in image.
+This script plots a 2D array as an image.
 It also gives statistics about the array.
 
 If multiple files are in parameters, then you can switch between files with the arrows of the figure,
@@ -100,13 +100,13 @@ if(plt.get_backend() == "Qt4Agg"):
     left_button.clicked.connect(callback_left_button)
     right_button.clicked.connect(callback_right_button)
 
-# This doesn't work yet.
-if(plt.get_backend() == "TkAgg"):
-    toolbar_elements = fig.canvas.toolbar.winfo_children() # With tkinter backend
-    left_button = toolbar_elements[6]
-    right_button = toolbar_elements[8]
-    left_button.config(command=callback_left_button)  # Doesn't work while debugging, but works if not debugging
-    right_button.config(command=callback_right_button)
+# # This doesn't work yet.
+# if(plt.get_backend() == "TkAgg"):
+#     toolbar_elements = fig.canvas.toolbar.winfo_children() # With tkinter backend
+#     left_button = toolbar_elements[6]
+#     right_button = toolbar_elements[8]
+#     left_button.config(command=callback_left_button)  # Doesn't work while debugging, but works if not debugging
+#     right_button.config(command=callback_right_button)
 
 # GUI main loop
 plt.show()
