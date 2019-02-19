@@ -22,13 +22,15 @@ fig = plt.figure()
 file = sys.argv[1]
 data = None
 n = 0
-minmax = None
 disp_threshold = True
 disp_color = True
 threshold = 0
 threshold_factor = 2
 [r, g, b] = [None]*3
 colors = None
+get_minmax_from_array = False
+minmax = (0, 1)
+
 
 # isdigit() doesn't work for decimal numbers
 def is_number(n):
@@ -107,7 +109,8 @@ def plot_array(A,fig,file):
         T = A > threshold
         if colors is not None: colors = colors[T.flatten()]
         data = ax.scatter(r[T], g[T], b[T], s=(scale * scale0 / n) * A[T] / np.max(A), c=colors)
-        ax.set_xlim(minmax); ax.set_ylim(minmax) ; ax.set_zlim(minmax)
+        if not get_minmax_from_array:
+            data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
         plt.suptitle("%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A)))
     else:
         data = ax.scatter(r, g, b, s=(scale * scale0 / n) * A / np.max(A), c=colors)
@@ -160,7 +163,8 @@ def callback_button(event, change_file=None):
         data.axes.cla()
         if colors is not None: colors = colors[T.flatten()]
         data.axes.scatter(r[T], g[T], b[T], s=(scale * scale0 / n) * A[T] / np.max(A), c=colors)
-        data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
+        if not get_minmax_from_array:
+            data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
         plt.suptitle("%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A)))
         data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
     else:
@@ -264,9 +268,9 @@ def on_keyboard(event):
 
 
 # Initialize variables
-# minmax = get_fix_mins_maxs(0, 1)
-minmax = get_fix_mins_maxs_default(0, 1)
-# minmax = (0, 1)
+# minmax = get_fix_mins_maxs(minmax[0], minmax[1])
+minmax = get_fix_mins_maxs_default(minmax[0], minmax[1])
+# minmax = (minmax[0], minmax[1])
 
 # Display first image (avoid duplicating code)
 im = np.load(file)
