@@ -12,11 +12,11 @@ import numpy as np
 import sys
 import os
 
-A = {}
+A = []
 
 for i in range(0,len(sys.argv)-1):
     file = sys.argv[i+1]
-    A[i] = np.load(file)
+    A.append(np.load(file))
     print(os.path.basename(file)," :\n")
     print(A[i])
     print("shape \t=",A[i].shape)
