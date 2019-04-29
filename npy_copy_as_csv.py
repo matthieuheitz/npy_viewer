@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This script copies the content of the NPY file
 in the clipboard in a CSV.
 This is intended to be pasted into a spreadsheet program.
 
 If multiple files are selected, they will all be copied one
 below the other, with a blank line separating them.
-'''
+"""
 
 import sys
 import io

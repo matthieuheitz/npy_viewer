@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-'''
+"""
 This script plots a 3D array as a scatter plot with point size depending on array values.
 It also gives statistics about the array.
 
 If multiple files are in parameters, then you can switch between files with the arrows of the figure,
 or with the left/right, up/down keys.
-'''
+"""
 
 import os
 import sys

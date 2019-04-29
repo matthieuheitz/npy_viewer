@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-'''
+"""
 This script compares the content of two NPY files
 It gives statistics about the difference array A-B
 If the arrays are 2D, a visual difference is plotted.
-'''
+"""
 
 import os
 import sys

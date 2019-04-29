@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-'''
+"""
 This script plots a 2D array as an image.
 It also gives statistics about the array.
 
 If multiple files are in parameters, then you can switch between files with the arrows of the figure,
 or with the left/right, up/down keys.
-'''
+"""
 
 import os
 import sys
@@ -46,7 +46,7 @@ def print_info(A,file):
 
 
 def callback_left_button(event):
-    ''' this function gets called if we hit the left button'''
+    """ this function gets called if we hit the left button"""
     # print('Left button pressed')
     global f_index
     if f_index == 1:
@@ -66,7 +66,7 @@ def callback_left_button(event):
 
 
 def callback_right_button(event):
-    ''' this function gets called if we hit the left button'''
+    """ this function gets called if we hit the left button"""
     # print('Right button pressed')
     global f_index
     global data
