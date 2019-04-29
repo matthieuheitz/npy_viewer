@@ -28,16 +28,18 @@ plt.switch_backend("Qt4Agg")
 
 num_files = len(sys.argv)-1
 f_index = 1
+# fig = plt.figure(figsize=(9,6))
 fig = plt.figure()
 file = sys.argv[1]
 data = None
-n = 0
+n = N = 0
 disp_threshold = True
-disp_color = True
+disp_mode = 1   # 0: data on size and no color, 1: data on size and RGB color, 2: data on color, size constant
 threshold = 0
 threshold_factor = 2
 [r, g, b] = [None]*3
 colors = None
+cb = None
 get_minmax_from_array = False
 minmax = (0, 1)
 
@@ -93,7 +95,7 @@ def get_fix_mins_maxs_default(min, max):
 def plot_array(A,fig,file):
     # fig.clf()
     global data
-    global n
+    global n, N
     global threshold
     global r,g,b
     global colors
@@ -105,7 +107,6 @@ def plot_array(A,fig,file):
     t1 = np.linspace(0,1,n1)
     t2 = np.linspace(0,1,n2)
     [r, g, b] = np.meshgrid(t0, t1, t2, indexing="ij")
-    colors = (np.vstack((r.flatten(), g.flatten(), b.flatten())).T if disp_color else None)
 
     # fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -113,18 +114,48 @@ def plot_array(A,fig,file):
 
     time0 = time.time()
 
+    scat_r = scat_g = scat_b = None
+    scat_colors = None
+    scat_scale = None
+    scat_cmap = None
+    if disp_mode == 0:
+        scat_scale = (scale * scale0 / n) * A / np.max(A)
+        scat_colors = None
+        fig.set_size_inches(8, 6)
+    elif disp_mode == 1:
+        scat_scale = (scale * scale0 / n) * A / np.max(A)
+        scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        fig.set_size_inches(8, 6)
+    elif disp_mode == 2:
+        scat_scale = (scale * scale0 / n)
+        scat_colors = A.flatten()
+        scat_cmap = 'coolwarm'
+        fig.set_size_inches(9, 6)
+
+    # If there is a treshold, apply it on everything
     if disp_threshold:
         threshold = 1/N    # mean for a uniform distribution
         # Only keep values higher than threshold
         T = A > threshold
-        if colors is not None: colors = colors[T.flatten()]
-        data = ax.scatter(r[T], g[T], b[T], s=(scale * scale0 / n) * A[T] / np.max(A), c=colors)
-        if not get_minmax_from_array:
-            data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
-        plt.suptitle("%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A)))
+        scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
+        if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
+        if disp_mode != 2: scat_scale = scat_scale[T]
+        suptitle = "%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A))
     else:
-        data = ax.scatter(r, g, b, s=(scale * scale0 / n) * A / np.max(A), c=colors)
-        plt.suptitle("%s\n scale=%g, max=%e"%(os.path.basename(file),scale,np.max(im)))
+        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(im))
+
+    # print("scat_r.shape:",scat_r.shape)
+    # print("scat_g.shape:",scat_g.shape)
+    # print("scat_b.shape:",scat_b.shape)
+    # print("scat_scale.shape:",scat_scale.shape)
+    # print("scat_colors.shape:",scat_colors.shape)
+    data = ax.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors, cmap=scat_cmap)
+    plt.suptitle(suptitle)
+    if not get_minmax_from_array:
+        data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
+    if disp_mode == 2:
+        global cb
+        cb = plt.colorbar(data)
 
     print("Time = ",time.time() - time0)
 
@@ -151,8 +182,9 @@ def callback_button(event, change_file=None):
         print("Error: Array must be of dimension 3")
         exit(-1)
 
+    global data
     global r, g, b
-    global n
+    global n, N
     global colors
     # If points have changed
     if A.shape != r.shape:
@@ -164,21 +196,75 @@ def callback_button(event, change_file=None):
         t2 = np.linspace(0,1,n2)
         [r, g, b] = np.meshgrid(t0, t1, t2, indexing="ij")
 
-    # Compute colors
-    colors = (np.vstack((r.flatten(), g.flatten(), b.flatten())).T if disp_color else None)
+    scat_r = scat_g = scat_b = None
+    scat_colors = None
+    scat_scale = None
+    scat_cmap = None
+    # Remove the colorbar if there is one
+    if data.colorbar:
+        data.colorbar.remove()
+        fig.subplots_adjust()
 
-    # Modify plot
+    if disp_mode == 0:
+        scat_scale = (scale * scale0 / n) * A / np.max(A)
+        scat_colors = None
+        fig.set_size_inches(8, 6)
+    elif disp_mode == 1:
+        scat_scale = (scale * scale0 / n) * A / np.max(A)
+        scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        fig.set_size_inches(8, 6)
+    elif disp_mode == 2:
+        scat_scale = (scale * scale0 / n)
+        scat_colors = A.flatten()
+        scat_cmap = 'coolwarm'
+        fig.set_size_inches(10, 6)
+
+
+    # If there is a treshold, apply it on everything
     if disp_threshold:
+        # threshold = 1/N
+        # Only keep values higher than threshold
         T = A > threshold
-        data.axes.cla()
-        if colors is not None: colors = colors[T.flatten()]
-        data.axes.scatter(r[T], g[T], b[T], s=(scale * scale0 / n) * A[T] / np.max(A), c=colors)
-        if not get_minmax_from_array:
-            data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
-        plt.suptitle("%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A)))
-        data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
+        scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
+        if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
+        if disp_mode != 2: scat_scale = scat_scale[T]
+        suptitle = "%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A))
     else:
-        data.set_sizes((scale*scale0/n) * A.flatten() / np.max(A))
+        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(im))
+
+    # print("scat_r.shape:",scat_r.shape)
+    # print("scat_g.shape:",scat_g.shape)
+    # print("scat_b.shape:",scat_b.shape)
+    # print("scat_scale.shape:",scat_scale.shape)
+    # print("scat_colors.shape:",scat_colors.shape)
+    data.axes.cla()
+    # fig.clf()
+    data = data.axes.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors, cmap=scat_cmap)
+    # data.axes.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors)
+    data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
+    plt.suptitle(suptitle)
+    if not get_minmax_from_array:
+        data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
+    if disp_mode == 2:
+        global cb
+        plt.colorbar(data)
+
+
+    # # Compute colors
+    # colors = (np.vstack((r.flatten(), g.flatten(), b.flatten())).T if disp_mode == 1 else None)
+    #
+    # # Modify plot
+    # if disp_threshold:
+    #     T = A > threshold
+    #     data.axes.cla()
+    #     if colors is not None: colors = colors[T.flatten()]
+    #     data.axes.scatter(r[T], g[T], b[T], s=(scale * scale0 / n) * A[T] / np.max(A), c=colors)
+    #     if not get_minmax_from_array:
+    #         data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
+    #     plt.suptitle("%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A)))
+    #     data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
+    # else:
+    #     data.set_sizes((scale*scale0/n) * A.flatten() / np.max(A))
 
     # plt.suptitle("%s\n scale=%g, max=%e"%(os.path.basename(file),scale,np.max(A)))
     # Redraw
@@ -205,7 +291,7 @@ def callback_disp_help(event):
     print("Valid keystrokes:")
     print("'\u2192','\u2193': Next file")
     print("'\u2190','\u2191': Previous file")
-    print("'c': Toogle color display")
+    print("'c': Switch between data display modes")
     print("'/': Decrease point size")
     print("'*': Increase point size")
     print("'p': Enter new point size")
@@ -253,10 +339,10 @@ def callback_disp_threshold_button(event):
     # Refresh
     callback_button(event)
 
-def callback_disp_color(event):
+def callback_disp_mode(event):
 
-    global disp_color
-    disp_color = not disp_color
+    global disp_mode
+    disp_mode = (disp_mode+1) % 3     # Switch between 0, 1, and 2
 
     # Refresh
     callback_button(event)
@@ -272,7 +358,7 @@ def on_keyboard(event):
     elif event.key in {'+', '-', 't', 'm'}:
         callback_disp_threshold_button(event)
     elif event.key in {'c'}:
-        callback_disp_color(event)
+        callback_disp_mode(event)
     elif event.key in {'h'}:
         callback_disp_help(event)
 
