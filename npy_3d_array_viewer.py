@@ -22,7 +22,9 @@ except ImportError as error:
     input("Press any key to exit")
     exit()
 
+# Recommended because the Tk backend is shaky when replotting.
 plt.switch_backend("Qt4Agg")
+# plt.switch_backend("TkAgg")
 
 num_files = len(sys.argv)-1
 f_index = 1

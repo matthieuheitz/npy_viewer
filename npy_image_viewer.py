@@ -21,7 +21,8 @@ except ImportError as error:
     exit()
 
 # Choose your backend
-plt.switch_backend("Qt4Agg")
+# plt.switch_backend("Qt4Agg")
+# plt.switch_backend("TkAgg")
 
 
 num_files = len(sys.argv)-1
