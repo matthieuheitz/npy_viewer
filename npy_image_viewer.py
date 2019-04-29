@@ -7,10 +7,18 @@ If multiple files are in parameters, then you can switch between files with the 
 or with the left/right, up/down keys.
 '''
 
-import matplotlib.pyplot as plt
-import numpy as np
-import sys
 import os
+import sys
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
 
 # Choose your backend
 plt.switch_backend("Qt4Agg")

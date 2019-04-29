@@ -7,10 +7,18 @@ It also displays the array(s) and gives some statistics.
 PyPlot is preloaded so that you don't have to type it.
 '''
 
-import matplotlib.pyplot as plt
-import numpy as np
-import sys
 import os
+import sys
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import numpy as np
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
+
 
 A = []
 

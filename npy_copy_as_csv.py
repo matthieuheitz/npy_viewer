@@ -9,11 +9,21 @@ If multiple files are selected, they will all be copied one
 below the other, with a blank line separating them.
 '''
 
-import numpy as np
 import sys
 import io
-import pyperclip
-import csv
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import numpy as np
+    import time
+    import pyperclip
+    import csv
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
+
 
 s = io.StringIO()
 csvWriter = csv.writer(s)

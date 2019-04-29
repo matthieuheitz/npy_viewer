@@ -7,12 +7,20 @@ If multiple files are in parameters, then you can switch between files with the 
 or with the left/right, up/down keys.
 '''
 
-import matplotlib.pyplot as plt
-import numpy as np
-import sys
 import os
-import time
-from mpl_toolkits.mplot3d import Axes3D
+import sys
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import time
+    from mpl_toolkits.mplot3d import Axes3D
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
 
 plt.switch_backend("Qt4Agg")
 

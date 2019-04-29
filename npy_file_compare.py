@@ -5,10 +5,19 @@ It gives statistics about the difference array A-B
 If the arrays are 2D, a visual difference is plotted.
 '''
 
-import matplotlib.pyplot as plt
-import numpy as np
-import sys
 import os
+import sys
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
+
 
 def hit_enter_to_quit():
     if sys.platform.startswith('linux'):

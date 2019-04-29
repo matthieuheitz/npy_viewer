@@ -3,9 +3,18 @@
 This script gives statistics about the array in the NPY file
 '''
 
-import numpy as np
-import sys
 import os
+import sys
+print("Python version:",sys.version)
+print("Python interpreter:",sys.executable)
+try:
+    import numpy as np
+
+except ImportError as error:
+    print(error)
+    input("Press any key to exit")
+    exit()
+
 
 for i in range(1,len(sys.argv)):
     file = sys.argv[i]
