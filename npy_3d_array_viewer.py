@@ -149,7 +149,7 @@ def plot_array(A,fig,file):
     if disp_threshold:
         threshold = 1/N    # mean for a uniform distribution
         # Only keep values higher than threshold
-        T = A > threshold
+        T = A >= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
@@ -251,7 +251,7 @@ def callback_button(event, change_file=None):
     if disp_threshold:
         # threshold = 1/N
         # Only keep values higher than threshold
-        T = A > threshold
+        T = A >= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
