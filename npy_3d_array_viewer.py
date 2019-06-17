@@ -16,6 +16,7 @@ try:
     import numpy as np
     import time
     from mpl_toolkits.mplot3d import Axes3D
+    import cv2
 
 except ImportError as error:
     print(error)
@@ -34,7 +35,9 @@ file = sys.argv[1]
 data = None
 n = N = 0
 disp_threshold = True
-disp_mode = 1   # 0: data on size and no color, 1: data on size and RGB color, 2: data on color, size constant
+colorspaces = ["RGB","LAB"]
+colorspace = "RGB"
+disp_mode = 1   # 0: data on size and no color, 1: data on size and color, 2: data on color, size constant
 threshold = 0
 threshold_factor = 2
 [r, g, b] = [None]*3
@@ -99,6 +102,7 @@ def plot_array(A,fig,file):
     global threshold
     global r,g,b
     global colors
+    global colorspace
 
     n0,n1,n2 = A.shape
     N = n0*n1*n2
@@ -108,9 +112,13 @@ def plot_array(A,fig,file):
     t2 = np.linspace(0,1,n2)
     [r, g, b] = np.meshgrid(t0, t1, t2, indexing="ij")
 
-    # fig = plt.figure()
+    # Guess from the filename if the histogram is Lab or RGB
+    if "-lab-" in os.path.basename(file): colorspace = "LAB"
+    else: colorspace = "RGB"
+
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('R (slow index)'); ax.set_ylabel('G (medium index)'); ax.set_zlabel('B (fast index)')
+    if colorspace == "RGB":  ax.set_xlabel('R (slow index)'); ax.set_ylabel('G (medium index)'); ax.set_zlabel('B (fast index)');
+    elif colorspace == "LAB":  ax.set_xlabel('L (slow index)'); ax.set_ylabel('A (medium index)'); ax.set_zlabel('B (fast index)');
 
     time0 = time.time()
 
@@ -124,7 +132,12 @@ def plot_array(A,fig,file):
         fig.set_size_inches(8, 6)
     elif disp_mode == 1:
         scat_scale = (scale * scale0 / n) * A / np.max(A)
-        scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        if colorspace == "RGB":
+            scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        elif colorspace == "LAB":
+            C = (np.vstack((r.flatten(), g.flatten(), b.flatten())).T).astype(np.float32)
+            C[:,0] *= 100; C[:,1:] = C[:,1:]*255 - 128  # Put in the good range
+            scat_colors = cv2.cvtColor(np.expand_dims(C,0), cv2.COLOR_LAB2RGB)[0]
         fig.set_size_inches(8, 6)
     elif disp_mode == 2:
         scat_scale = (scale * scale0 / n)
@@ -186,6 +199,7 @@ def callback_button(event, change_file=None):
     global r, g, b
     global n, N
     global colors
+    global colorspace
     # If points have changed
     if A.shape != r.shape:
         n0,n1,n2 = A.shape
@@ -195,6 +209,14 @@ def callback_button(event, change_file=None):
         t1 = np.linspace(0,1,n1)
         t2 = np.linspace(0,1,n2)
         [r, g, b] = np.meshgrid(t0, t1, t2, indexing="ij")
+
+    # Choose color depending on filename, but only when switching files.
+    # If I don't add this condition, I can never visualize an RGB file in LAB,
+    # which can be useful if the file doesn't have -lab- in it, but is still LAB.
+    if change_file:
+        # Guess from the filename if the histogram is Lab or RGB
+        if "-lab-" in os.path.basename(file): colorspace = "LAB"
+        else: colorspace = "RGB"
 
     scat_r = scat_g = scat_b = None
     scat_colors = None
@@ -211,7 +233,12 @@ def callback_button(event, change_file=None):
         fig.set_size_inches(8, 6)
     elif disp_mode == 1:
         scat_scale = (scale * scale0 / n) * A / np.max(A)
-        scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        if colorspace == "RGB":
+            scat_colors = np.vstack((r.flatten(), g.flatten(), b.flatten())).T
+        elif colorspace == "LAB":
+            C = (np.vstack((r.flatten(), g.flatten(), b.flatten())).T).astype(np.float32)
+            C[:,0] *= 100; C[:,1:] = C[:,1:]*255 - 128  # Put in the good range
+            scat_colors = cv2.cvtColor(np.expand_dims(C,0), cv2.COLOR_LAB2RGB)[0]
         fig.set_size_inches(8, 6)
     elif disp_mode == 2:
         scat_scale = (scale * scale0 / n)
@@ -241,7 +268,9 @@ def callback_button(event, change_file=None):
     # fig.clf()
     data = data.axes.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors, cmap=scat_cmap)
     # data.axes.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors)
-    data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
+    if colorspace == "RGB":  data.axes.set_xlabel('R (slow index)'); data.axes.set_ylabel('G (medium index)'); data.axes.set_zlabel('B (fast index)')
+    elif colorspace == "LAB":  data.axes.set_xlabel('L (slow index)'); data.axes.set_ylabel('A (medium index)'); data.axes.set_zlabel('B (fast index)')
+
     plt.suptitle(suptitle)
     if not get_minmax_from_array:
         data.axes.set_xlim(minmax); data.axes.set_ylim(minmax); data.axes.set_zlim(minmax)
@@ -291,7 +320,8 @@ def callback_disp_help(event):
     print("Valid keystrokes:")
     print("'\u2192','\u2193': Next file")
     print("'\u2190','\u2191': Previous file")
-    print("'c': Switch between data display modes")
+    print("'d': Switch between data display modes")
+    print("'c': Switch between color spaces")
     print("'/': Decrease point size")
     print("'*': Increase point size")
     print("'p': Enter new point size")
@@ -347,6 +377,16 @@ def callback_disp_mode(event):
     # Refresh
     callback_button(event)
 
+
+def callback_colorspace(event):
+
+    global colorspace
+    colorspace = colorspaces[(colorspaces.index(colorspace)+1)%len(colorspaces)]     # Switch between colorspaces
+
+    # Refresh
+    callback_button(event)
+
+
 def on_keyboard(event):
     # print('You pressed', event.key, event.xdata, event.ydata)
     if event.key in {'left', 'up'}:
@@ -357,10 +397,12 @@ def on_keyboard(event):
         callback_scale_button(event)
     elif event.key in {'+', '-', 't', 'm'}:
         callback_disp_threshold_button(event)
-    elif event.key in {'c'}:
+    elif event.key in {'d'}:
         callback_disp_mode(event)
     elif event.key in {'h'}:
         callback_disp_help(event)
+    elif event.key in {'c'}:
+        callback_colorspace(event)
 
 
 # Initialize variables
