@@ -4,7 +4,7 @@ Type=Application
 Name=NPY Load in Shell
 GenericName=NPY Load in Shell
 Comment=Shortcut to open a python shell with the NPY file already loaded as the matrix A
-# Change the path to the script here
+# Change the path to the script here, or use setup_npy_scripts.sh
 Exec= python3 -i /path/to/npy_viewer/npy_load_in_shell.py %U
 MimeType=application/octet-stream
 Terminal=true

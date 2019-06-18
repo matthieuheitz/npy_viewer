@@ -16,7 +16,10 @@ It was tested on Ubuntu 16.04.
 
 The scripts are written in Python 3.
 The `.desktop` files will use the python that `python3` refers to in your system.
+
 To change that, simply update the path in the `.desktop` files.
+For example:
+    `sed -i 's,python3,/usr/local/bin/python3,' NPY*.desktop`
 
 ##### Packages
 
@@ -37,14 +40,17 @@ The `Qt4Agg` backend requires the deb package `python3-pyqt4`
 ### Installing
 
 After downloading the repository or indivual files to your computer,
-you will need to update the path to the Python script in the corresponding .desktop file :
+the paths to the Python scripts need to be updated in the .desktop files.
 
-`Exec = python3 /path/to/python/script.py %U`
+You can do so:
 
-Then, copy the desktop files in your Applications folder:
+- Automagically, by running `setup_npy_scripts.sh`, which will put them in `~/.local/share/applications`
+- Manually by changing the lines in the .desktop files.
+ `Exec= python3 /path/to/python/script.py %U`
 
-- globally: `/usr/share/applications/` (requires sudo privileges)
-- locally: `~/.local/share/applications/`
+On Ubuntu, the usual directories to put .dekstop files in are :
+- `/usr/share/applications/` for all users to access (requires sudo privileges)
+- `~/.local/share/applications/` for a specific user
 
 After that, the application icon should appear in the *Open With...* menu.
 You can set it as default to open it with just a double click.

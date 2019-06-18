@@ -4,7 +4,7 @@ Type=Application
 Name=NPY Copy as CSV
 GenericName=NPY Copy as CSV
 Comment=Shortcut to copy NPY files in clipboard as a CSV (for pasting in a spreadsheet)
-# Change the path to the script here
+# Change the path to the script here, or use setup_npy_scripts.sh
 Exec= python3 /path/to/npy_viewer/npy_copy_as_csv.py %U
 MimeType=application/octet-stream
 Terminal=false

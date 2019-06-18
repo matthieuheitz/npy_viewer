@@ -4,7 +4,7 @@ Type=Application
 Name=NPY File Compare
 GenericName=NPY File Compare
 Comment=Shortcut to quickly compare NPY files (in terminal)
-# Change the path to the script here
+# Change the path to the script here, or use setup_npy_scripts.sh
 Exec= python3 /path/to/npy_viewer/npy_file_compare.py %U
 MimeType=application/octet-stream
 Terminal=true
