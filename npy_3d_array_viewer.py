@@ -34,10 +34,10 @@ fig = plt.figure()
 file = sys.argv[1]
 data = None
 n = N = 0
-disp_threshold = True
 colorspaces = ["RGB","LAB"]
 colorspace = "RGB"
 disp_mode = 1   # 0: data on size and no color, 1: data on size and color, 2: data on color, size constant
+threshold_enabled = True
 threshold = 0
 threshold_factor = 2
 [r, g, b] = [None]*3
@@ -62,9 +62,8 @@ scale = 1
 
 
 def hit_enter_to_quit():
+    input("Hit Enter to quit ...")
     exit(0)
-    # if sys.platform.startswith('linux'):
-    #     input("Hit Enter to quit ...")
 
 
 def print_info(A,file):
@@ -104,6 +103,9 @@ def plot_array(A,fig,file):
     global colors
     global colorspace
 
+    if len(A.shape) != 3:
+        print("ERROR: The array should be 3-dimensional ([n1,n2,n3])")
+        hit_enter_to_quit()
     n0,n1,n2 = A.shape
     N = n0*n1*n2
     n = np.cbrt(n0*n1*n2)
@@ -146,22 +148,17 @@ def plot_array(A,fig,file):
         fig.set_size_inches(9, 6)
 
     # If there is a treshold, apply it on everything
-    if disp_threshold:
+    if threshold_enabled:
         threshold = 1/N    # mean for a uniform distribution
         # Only keep values higher than threshold
         T = A >= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
-        suptitle = "%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A))
+        suptitle = "%s\n scale=%.2g, max=%e, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, np.max(A), threshold, np.count_nonzero(T)/np.size(A))
     else:
-        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(im))
+        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(A))
 
-    # print("scat_r.shape:",scat_r.shape)
-    # print("scat_g.shape:",scat_g.shape)
-    # print("scat_b.shape:",scat_b.shape)
-    # print("scat_scale.shape:",scat_scale.shape)
-    # print("scat_colors.shape:",scat_colors.shape)
     data = ax.scatter(scat_r, scat_g, scat_b, s=scat_scale, c=scat_colors, cmap=scat_cmap)
     plt.suptitle(suptitle)
     if not get_minmax_from_array:
@@ -218,7 +215,9 @@ def callback_button(event, change_file=None):
         if "-lab-" in os.path.basename(file): colorspace = "LAB"
         else: colorspace = "RGB"
 
-    scat_r = scat_g = scat_b = None
+    scat_r = r
+    scat_g = g
+    scat_b = b
     scat_colors = None
     scat_scale = None
     scat_cmap = None
@@ -248,16 +247,16 @@ def callback_button(event, change_file=None):
 
 
     # If there is a treshold, apply it on everything
-    if disp_threshold:
+    if threshold_enabled:
         # threshold = 1/N
         # Only keep values higher than threshold
         T = A >= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
-        suptitle = "%s\n scale=%.2g, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, threshold, np.count_nonzero(T)/np.size(A))
+        suptitle = "%s\n scale=%.2g, max=%e, threshold=%.2g, disp_ratio=%.2g" % (os.path.basename(file), scale, np.max(A), threshold, np.count_nonzero(T)/np.size(A))
     else:
-        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(im))
+        suptitle = "%s\n scale=%.2g, max=%e" % (os.path.basename(file), scale, np.max(A))
 
     # print("scat_r.shape:",scat_r.shape)
     # print("scat_g.shape:",scat_g.shape)
@@ -327,6 +326,7 @@ def callback_disp_help(event):
     print("'p': Enter new point size")
     print("'-': Increase display value threshold (decrease number of points)")
     print("'+': Decrease display value threshold (increase number of points)")
+    print("'T': Toggle threshold use")
     print("'t': Enter new threshold")
     print("'m': Enter new threshold (multiplying) factor when increasing/decreasing")
     print("'h': Display this help")
@@ -353,8 +353,10 @@ def callback_scale_button(event):
 def callback_disp_threshold_button(event):
     global threshold
     global threshold_factor
+    global threshold_enabled
     if event.key == '-':    threshold *= threshold_factor
     if event.key == '+':    threshold /= threshold_factor
+    if event.key == 'T':    threshold_enabled = not threshold_enabled
     if event.key == 't':
         print("Threshold for point display: %g" % threshold)
         key = input("Enter new threshold ? (just hit enter if not) : ")
@@ -395,7 +397,7 @@ def on_keyboard(event):
         callback_right_button(event)
     elif event.key in {'/', '*', 'p'}:
         callback_scale_button(event)
-    elif event.key in {'+', '-', 't', 'm'}:
+    elif event.key in {'+', '-', 't', 'T', 'm'}:
         callback_disp_threshold_button(event)
     elif event.key in {'d'}:
         callback_disp_mode(event)
@@ -439,5 +441,3 @@ plt.gcf().canvas.mpl_connect('key_press_event', on_keyboard)
 
 # GUI main loop
 plt.show()
-
-hit_enter_to_quit()
