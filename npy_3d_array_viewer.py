@@ -40,6 +40,7 @@ disp_mode = 1   # 0: data on size and no color, 1: data on size and color, 2: da
 threshold_enabled = True
 threshold = 0
 threshold_factor = 2
+threshold_disp_below = True
 [r, g, b] = [None]*3
 colors = None
 cb = None
@@ -151,7 +152,7 @@ def plot_array(A,fig,file):
     if threshold_enabled:
         threshold = 1/N    # mean for a uniform distribution
         # Only keep values higher than threshold
-        T = A >= threshold
+        T = A >= threshold if threshold_disp_below else A <= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
@@ -250,7 +251,7 @@ def callback_button(event, change_file=None):
     if threshold_enabled:
         # threshold = 1/N
         # Only keep values higher than threshold
-        T = A >= threshold
+        T = A >= threshold if threshold_disp_below else A <= threshold
         scat_r = r[T]; scat_g = g[T]; scat_b = b[T]
         if scat_colors is not None: scat_colors = scat_colors[T.flatten()]
         if disp_mode != 2: scat_scale = scat_scale[T]
@@ -327,6 +328,7 @@ def callback_disp_help(event):
     print("'-': Increase display value threshold (decrease number of points)")
     print("'+': Decrease display value threshold (increase number of points)")
     print("'T': Toggle threshold use")
+    print("'%': Display above or below threshold")
     print("'t': Enter new threshold")
     print("'m': Enter new threshold (multiplying) factor when increasing/decreasing")
     print("'h': Display this help")
@@ -354,8 +356,9 @@ def callback_disp_threshold_button(event):
     global threshold
     global threshold_factor
     global threshold_enabled
-    if event.key == '-':    threshold *= threshold_factor
-    if event.key == '+':    threshold /= threshold_factor
+    global threshold_disp_below
+    if event.key == '-':    threshold /= threshold_factor
+    if event.key == '+':    threshold *= threshold_factor
     if event.key == 'T':    threshold_enabled = not threshold_enabled
     if event.key == 't':
         print("Threshold for point display: %g" % threshold)
@@ -367,6 +370,8 @@ def callback_disp_threshold_button(event):
         key = input("Enter new threshold factor ? (just hit enter if not) : ")
         if is_number(key):
             threshold_factor = float(key)
+    if event.key == "%" :
+        threshold_disp_below = not threshold_disp_below
 
     # Refresh
     callback_button(event)
@@ -397,7 +402,7 @@ def on_keyboard(event):
         callback_right_button(event)
     elif event.key in {'/', '*', 'p'}:
         callback_scale_button(event)
-    elif event.key in {'+', '-', 't', 'T', 'm'}:
+    elif event.key in {'+', '-', 't', 'T', 'm','%'}:
         callback_disp_threshold_button(event)
     elif event.key in {'d'}:
         callback_disp_mode(event)
