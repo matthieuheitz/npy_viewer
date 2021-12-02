@@ -25,7 +25,6 @@ for i in range(1,len(sys.argv)):
     print(os.path.basename(file)," :\n")
     print(A)
     print("\nshape \t=",A.shape)
-    A[2] = "hello"*250
     if A.dtype == np.dtype("O"):
         print("A is an 'object' array:")
         for i,e in enumerate(A):
