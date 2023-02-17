@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=H5AD File Viewer
+GenericName=H5AD File Viewer
+Comment=Shortcut to quickly visualize H5AD files (in terminal)
+# Change the path to the script here, or use setup_npy_scripts.sh
+Exec= python3 /path/to/npy_viewer/h5ad_viewer.py %U
+MimeType=application/x-hdf
+Terminal=true
+# Icon=
