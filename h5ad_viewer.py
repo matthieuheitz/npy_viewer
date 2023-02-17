@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import os
-import anndata
 import sys
+import anndata
+import numpy as np
 
 adata = anndata.read_h5ad(sys.argv[1])
 print("##############################")
